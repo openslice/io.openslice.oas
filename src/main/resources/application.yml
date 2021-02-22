@@ -1,4 +1,9 @@
 
+server:
+  port: 13101
+  servlet:
+    context-path : /oas-api
+
 # For Spring Actuator /info endpoint
 info:
     artifact: oas-service
@@ -6,10 +11,11 @@ info:
     description: Spring oas-service
     version: 1.0.0
 
-server:
-  port: 13101
     
 spring:
+  profiles: default
+  application:
+    name: openslice-assurance-services-management-api
   datasource:
     url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
     password: sa

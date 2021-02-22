@@ -23,12 +23,17 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
+
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * @author ctranoris
  *
  */
+@EntityScan( basePackages = {"io.openslice.model", "io.openslice.centrallog.client"})
+@EnableSwagger2
 @SpringBootApplication
 public class OasSpingBoot implements CommandLineRunner {
 
