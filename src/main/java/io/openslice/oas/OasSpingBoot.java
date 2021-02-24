@@ -32,7 +32,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @author ctranoris
  *
  */
-@EntityScan( basePackages = {"io.openslice.model", "io.openslice.centrallog.client"})
+
 @EnableSwagger2
 @SpringBootApplication
 public class OasSpingBoot implements CommandLineRunner {

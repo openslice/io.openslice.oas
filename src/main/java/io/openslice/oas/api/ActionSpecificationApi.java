@@ -143,7 +143,7 @@ public interface ActionSpecificationApi {
 			"application/json;charset=utf-8" }, method = RequestMethod.GET)
 	default ResponseEntity<ActionSpecification> retrieveActionSpecification(
 			@ApiParam(value = "Identifier of the ActionSpecification", required = true) @PathVariable("id") String id,
-			@ApiParam(value = "Comma-separated properties to provide in response") @Valid @RequestParam(value = "fields", required = false) String fields) {
+			@ApiParam(value = "Comma-separated properties to provide in response") @Valid @RequestParam(value = "fields", required = false) String fields, Map<String, String> allParams) {
 		
 		return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 	}

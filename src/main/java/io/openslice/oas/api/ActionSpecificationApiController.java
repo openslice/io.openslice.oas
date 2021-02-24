@@ -1,5 +1,6 @@
 package io.openslice.oas.api;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -20,7 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.openslice.oas.model.ActionSpecification;
 import io.openslice.oas.model.ActionSpecificationCreate;
-import io.openslice.tmf.stm653.model.ServiceTestSpecification;
+import io.openslice.oas.model.ActionSpecificationUpdate;
+import io.openslice.oas.reposervices.ActionSpecificationRepoService;
 
 
 @Controller
@@ -33,8 +36,9 @@ public class ActionSpecificationApiController  implements ActionSpecificationApi
 
 	private final HttpServletRequest request;
 
-	@Autowired
-	ActionSpecificationApiController serviceTestSpecificationRepoService;
+
+	@Autowired	
+	ActionSpecificationRepoService actionSpecificationRepoService;
 
 	@Value("${spring.application.name}")
 	private String compname;
@@ -56,27 +60,90 @@ public class ActionSpecificationApiController  implements ActionSpecificationApi
 	}
 	
 	
-//	@Override
-//	public ResponseEntity<ActionSpecification> createActionSpecification(@Valid ActionSpecificationCreate body) {
-//		return new ResponseEntity<ActionSpecification>(HttpStatus.INTERNAL_SERVER_ERROR);
-//	}
-//	
-//	@Override
-//	public ResponseEntity<Void> deleteActionSpecification(String id) {
-//		// TODO Auto-generated method stub
-//		return ActionSpecificationApi.super.deleteActionSpecification(id);
-//	}
-//	
-//	@Override
-//	public ResponseEntity<ActionSpecification> retrieveActionSpecification(String id, @Valid String fields) {
-//		return new ResponseEntity<ActionSpecification>(HttpStatus.INTERNAL_SERVER_ERROR);
-//	}
-//	
-//	
-//	@Override
-//	public ResponseEntity<List<ActionSpecification>> listActionSpecification(@Valid String fields,
-//			@Valid Integer offset, @Valid Integer limit, @Valid Map<String, String> allParams) {
-//		// TODO Auto-generated method stub
-//		return ActionSpecificationApi.super.listActionSpecification(fields, offset, limit, allParams);
-//	}
+	@Override
+	@Secured({ "ROLE_ADMIN" })
+	public ResponseEntity<ActionSpecification> createActionSpecification(@Valid ActionSpecificationCreate body) {
+		try {
+
+    		ActionSpecification c = actionSpecificationRepoService.addActionSpecification( body );
+
+			return new ResponseEntity<ActionSpecification>(c, HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("Couldn't serialize response for content type application/json", e);
+			return new ResponseEntity<ActionSpecification>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@Override
+	@Secured({ "ROLE_ADMIN" })
+	public ResponseEntity<Void> deleteActionSpecification(String id) {
+		try {
+
+			return new ResponseEntity<Void>( actionSpecificationRepoService.deleteById( id ), HttpStatus.OK);
+		} catch ( Exception e) {
+			log.error("Couldn't serialize response for content type application/json", e);
+			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@Override
+	@Secured({ "ROLE_ADMIN" })
+	public ResponseEntity<ActionSpecification> retrieveActionSpecification(String id, @Valid String fields,
+			Map<String, String> allParams) {
+
+		try {
+
+			return new ResponseEntity<ActionSpecification>( actionSpecificationRepoService.findById( id ), HttpStatus.OK);
+		} catch ( Exception e) {
+			log.error("Couldn't serialize response for content type application/json", e);
+			return new ResponseEntity<ActionSpecification>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
+	
+	
+	@Override
+	@Secured({ "ROLE_ADMIN" })
+	public ResponseEntity<ActionSpecification> patchActionSpecification(@Valid ActionSpecificationUpdate body,
+			String id) {
+		ActionSpecification c = actionSpecificationRepoService.updateActionSpecification( id, body );
+
+		return new ResponseEntity<ActionSpecification>(c, HttpStatus.OK);
+	}
+	
+	
+	@Override
+	@Secured({ "ROLE_ADMIN" })
+	public ResponseEntity<List<ActionSpecification>> listActionSpecification(@Valid String fields,
+			@Valid Integer offset, @Valid Integer limit, @Valid Map<String, String> allParams) {
+
+		try {
+			if (allParams != null) {
+				allParams.remove("fields");
+				allParams.remove("offset");
+				allParams.remove("limit");
+			} else {
+				allParams = new HashMap<>();
+			}
+			if ((fields == null) && (allParams.size() == 0)) {
+
+				String myfields = null;
+				return new ResponseEntity<List<ActionSpecification>>(						
+						actionSpecificationRepoService.findAll( myfields, allParams), HttpStatus.OK);
+				
+				
+			} else {
+
+				
+				return new ResponseEntity<List<ActionSpecification>>(
+						actionSpecificationRepoService.findAll(fields, allParams), HttpStatus.OK);
+			}
+
+		} catch (Exception e) {
+			log.error("Couldn't serialize response for content type application/json", e);
+			return new ResponseEntity<List<ActionSpecification>>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
 }

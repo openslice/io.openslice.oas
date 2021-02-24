@@ -9,8 +9,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.Valid;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -18,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.openslice.tmf.common.model.OpensliceEvent;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -42,18 +45,26 @@ public class RuleSpecification {
 	@JsonProperty("name")
 	protected String name = null;
 
-
-
 	@Lob
 	@Column(name = "LDESCRIPTION", columnDefinition = "LONGTEXT")
 	@JsonProperty("description")
 	protected String description = null;
 
+	@JsonProperty("eventType")
+	String opensliceEventType;
+	
 	@JsonProperty("actions")
 	@Valid
 	@OneToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
-	private Set<ActionSpecification> actions = new HashSet<>(); 
+	private Set<ActionSpecificationRef> actions = new HashSet<>(); 
 	
+	@JsonProperty("scope")
+	Scope scope;
+
+	@JsonProperty("condition")	
+	@Valid
+	@OneToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+	private Set<Condition> condition = new HashSet<>(); 
 	
 	public RuleSpecification name(String name) {
 		this.name = name;
@@ -107,25 +118,6 @@ public class RuleSpecification {
 		this.description = description;
 	}
 	
-	
-	@Override
-	public boolean equals(java.lang.Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		RuleSpecification Entity = (RuleSpecification) o;
-		return Objects.equals(this.uuid, Entity.uuid) && Objects.equals(this.name, Entity.name);
-	}
-
-//	@Override
-//	public int hashCode() {
-//		return Objects.hash(uuid, 
-//
-//				baseType, schemaLocation);
-//	}
 
 	@Override
 	public String toString() {
