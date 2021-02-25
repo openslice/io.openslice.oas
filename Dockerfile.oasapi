@@ -5,6 +5,6 @@ ENV SPRING_APPLICATION_JSON='{ \
 	"spring.activemq.broker-url": "tcp://10.0.2.15:61616"  }'
 RUN mkdir /opt/shareclasses
 RUN mkdir -p /opt/openslice/lib/
-COPY target/io.openslice.oas-1.0.2-SNAPSHOT-exec.jar /opt/openslice/lib/
-CMD ["java", "-Xshareclasses:cacheDir=/opt/shareclasses", "-jar", "/opt/openslice/lib/io.openslice.oas-1.0.2-SNAPSHOT-exec.jar"]
+COPY target/io.openslice.oas-1.0.2-SNAPSHOT.jar /opt/openslice/lib/
+CMD ["java", "-Xshareclasses:cacheDir=/opt/shareclasses", "-jar", "/opt/openslice/lib/io.openslice.oas-1.0.2-SNAPSHOT.jar"]
 EXPOSE 13101
