@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiModel;
  */
 @ApiModel(description = "Action reference")
 @Validated
-@Entity(name = "ActionSpecificationRef")
+@Entity(name = "OASActionSpecRef")
 @JsonIgnoreProperties({ "uuid" })
 @Data
 public class ActionSpecificationRef {

@@ -1,9 +1,4 @@
 
-server:
-  port: 13101
-  servlet:
-    context-path : /oas-api
-
 # For Spring Actuator /info endpoint
 info:
     artifact: oas-service
@@ -11,20 +6,25 @@ info:
     description: Spring oas-service
     version: 1.0.0
 
+server:
+  port: 13101
+  servlet:
+    context-path : /oas-api
+
     
 spring:
   profiles: default
   application:
     name: openslice-assurance-services-management-api
   datasource:
-    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
-    password: sa
-    username: sa
+    url: jdbc:mysql://localhost/oasdb?createDatabaseIfNotExist=true&useUnicode=true&nullCatalogMeansCurrent=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    password: letmein
+    username: root
+    databaseSchemaUpdate: true
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: io.openslice.oas.LocalMysqlDialect
     hibernate:
-      ddl-auto: create-drop
-      hbm2ddl.auto: create-drop
+      ddl-auto: update
     show-sql: false
     generate-ddl: true
     properties.hibernate.current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext 
@@ -33,7 +33,7 @@ spring:
         connection:
           characterEncoding: utf-8
           CharSet: utf-8
-          useUnicode: true
+          useUnicode: true 
   activemq:
     brokerUrl: tcp://localhost:61616
     user: admin
@@ -79,6 +79,7 @@ oauthsign:
    key: "EK97Y7Y9WPGG1MEG"
 
 
+
 CATALOG_GET_SERVICEORDERS: "jms:queue:CATALOG.GET.SERVICEORDERS"
 CATALOG_GET_SERVICEORDER_BY_ID: "jms:queue:CATALOG.GET.SERVICEORDER_BY_ID"
 CATALOG_UPD_SERVICEORDER_BY_ID: "jms:queue:CATALOG.UPD.SERVICEORDER_BY_ID"
@@ -103,3 +104,24 @@ NFV_CATALOG_GET_DEPLOYMENT_BY_ID : "jms:queue:NFVCATALOG.GET.DEPLOYMENT_BY_ID"
 NFV_CATALOG_GET_NSD_BY_ID: "jms:queue:NFVCATALOG.GET.NSD_BY_ID" 
 NFV_CATALOG_UPD_DEPLOYMENT_BY_ID: "jms:queue:NFVCATALOG.UPD.DEPLOYMENT_BY_ID"
 NFV_CATALOG_NS_DAY2_ACTION: "jms:queue:ns.action.run"
+
+
+# ===================================================================
+# Common Flowable Spring Boot Properties
+# SEE: https://flowable.com/open-source/docs/bpmn/ch05a-Spring-Boot/
+# This sample file is provided as a guideline. Do NOT copy it in its
+# entirety to your own application.            ^^^
+# ===================================================================
+
+flowable:
+    database-schema-update: true
+
+# Core (Process) https://github.com/flowable/flowable-engine/tree/master/modules/flowable-spring-boot/flowable-spring-boot-starters/flowable-spring-boot-autoconfigure/src/main/java/org/flowable/spring/boot/FlowableProperties.java
+#flowable.check-process-definitions: true # Whether process definitions need to be auto deployed.
+#flowable.database-schema= # In some situations you want to set the schema to use for table checks / generation if the database metadata doesn't return that correctly.
+#flowable.db-history-used=true # Whether db history should be used.
+#flowable.deployment-name=SpringBootAutoDeployment # The name of the auto deployment.
+#flowable.history-level=audit # The history level that needs to be used.
+#flowable.process-definition-location-prefix=classpath*:/processes/ # The folder in which processes need to be searched for auto deployment.
+#flowable.process-definition-location-suffixes=**.bpmn20.xml,**.bpmn # The suffixes (extensions) of the files that needs to be deployed from the 'processDefinitionLocationPrefix' location.
+

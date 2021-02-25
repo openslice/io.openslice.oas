@@ -129,14 +129,14 @@ public class RulesIntegrationTest {
 		c1.setBooleanOperator("AND");
 		c1.setOpensliceEventAttributeName("probableCause");
 		c1.setOperator("EQUALS");
-		c1.setOpensliceEventAttributeValue("thresholdCrossed");
+		c1.setEventAttributeValue("thresholdCrossed");
 		
 
 		Condition c2 = new Condition();
 		c2.setBooleanOperator("AND");
 		c2.setOpensliceEventAttributeName("severity");
 		c2.setOperator("EQUALS");
-		c2.setOpensliceEventAttributeValue("critical");
+		c2.setEventAttributeValue("critical");
 		
 		rule.getCondition().add( c1 );
 		rule.getCondition().add( c2 );

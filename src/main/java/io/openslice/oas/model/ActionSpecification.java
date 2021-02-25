@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(description = "An ActionSpecification is an entity that describes an action to perform on certain entities.")
 @Validated
-@Entity(name = "ActionSpecification")
+@Entity(name = "OASActionSpec")
 public class ActionSpecification {
 
 	@Id

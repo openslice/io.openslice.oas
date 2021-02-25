@@ -33,7 +33,7 @@ import lombok.Data;
  */
 @ApiModel(description = "A RuleSpecification is an entity that describes a rule to apply an action on certain conditions in the context of a service.")
 @Validated
-@Entity(name = "RuleSpecification")
+@Entity(name = "OASRuleSpec")
 @Data
 public class RuleSpecification {
 

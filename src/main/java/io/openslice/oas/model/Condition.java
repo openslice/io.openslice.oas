@@ -20,7 +20,7 @@ import lombok.Data;
  */
 @ApiModel(description = "A Condition is an entity that describes the condition that must be tru in order to apply an action.")
 @Validated
-@Entity(name = "Condition")
+@Entity(name = "OASCondition")
 @Data
 public class Condition {
 
@@ -36,7 +36,7 @@ public class Condition {
 	String opensliceEventAttributeName;
 
 	@JsonProperty("eventAttributeValue")
-	String opensliceEventAttributeValue;
+	String eventAttributeValue;
 
 	@JsonProperty("operator")
 	String operator;
