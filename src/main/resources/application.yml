@@ -79,6 +79,26 @@ oauthsign:
    key: "EK97Y7Y9WPGG1MEG"
 
 
+# ===================================================================
+# Common Flowable Spring Boot Properties
+# SEE: https://flowable.com/open-source/docs/bpmn/ch05a-Spring-Boot/
+# This sample file is provided as a guideline. Do NOT copy it in its
+# entirety to your own application.            ^^^
+# ===================================================================
+
+flowable:
+    database-schema-update: true
+
+# Core (Process) https://github.com/flowable/flowable-engine/tree/master/modules/flowable-spring-boot/flowable-spring-boot-starters/flowable-spring-boot-autoconfigure/src/main/java/org/flowable/spring/boot/FlowableProperties.java
+#flowable.check-process-definitions: true # Whether process definitions need to be auto deployed.
+#flowable.database-schema= # In some situations you want to set the schema to use for table checks / generation if the database metadata doesn't return that correctly.
+#flowable.db-history-used=true # Whether db history should be used.
+#flowable.deployment-name=SpringBootAutoDeployment # The name of the auto deployment.
+#flowable.history-level=audit # The history level that needs to be used.
+#flowable.process-definition-location-prefix=classpath*:/processes/ # The folder in which processes need to be searched for auto deployment.
+#flowable.process-definition-location-suffixes=**.bpmn20.xml,**.bpmn # The suffixes (extensions) of the files that needs to be deployed from the 'processDefinitionLocationPrefix' location.
+
+
 
 CATALOG_GET_SERVICEORDERS: "jms:queue:CATALOG.GET.SERVICEORDERS"
 CATALOG_GET_SERVICEORDER_BY_ID: "jms:queue:CATALOG.GET.SERVICEORDER_BY_ID"
@@ -106,22 +126,25 @@ NFV_CATALOG_UPD_DEPLOYMENT_BY_ID: "jms:queue:NFVCATALOG.UPD.DEPLOYMENT_BY_ID"
 NFV_CATALOG_NS_DAY2_ACTION: "jms:queue:ns.action.run"
 
 
-# ===================================================================
-# Common Flowable Spring Boot Properties
-# SEE: https://flowable.com/open-source/docs/bpmn/ch05a-Spring-Boot/
-# This sample file is provided as a guideline. Do NOT copy it in its
-# entirety to your own application.            ^^^
-# ===================================================================
 
-flowable:
-    database-schema-update: true
+#ALARMS
+ALARMS_ADD_ALARM: "jms:queue:ALARMS.ADD.ALARM"
+ALARMS_UPDATE_ALARM: "jms:queue:ALARMS.UPDATE.ALARM"
+ALARMS_GET_ALARM: "jms:queue:ALARMS.GET.ALARM"
 
-# Core (Process) https://github.com/flowable/flowable-engine/tree/master/modules/flowable-spring-boot/flowable-spring-boot-starters/flowable-spring-boot-autoconfigure/src/main/java/org/flowable/spring/boot/FlowableProperties.java
-#flowable.check-process-definitions: true # Whether process definitions need to be auto deployed.
-#flowable.database-schema= # In some situations you want to set the schema to use for table checks / generation if the database metadata doesn't return that correctly.
-#flowable.db-history-used=true # Whether db history should be used.
-#flowable.deployment-name=SpringBootAutoDeployment # The name of the auto deployment.
-#flowable.history-level=audit # The history level that needs to be used.
-#flowable.process-definition-location-prefix=classpath*:/processes/ # The folder in which processes need to be searched for auto deployment.
-#flowable.process-definition-location-suffixes=**.bpmn20.xml,**.bpmn # The suffixes (extensions) of the files that needs to be deployed from the 'processDefinitionLocationPrefix' location.
-
+#EVENT TOPICS IN Message Bus
+EVENT_SERVICE_CREATE: "jms:topic:EVENT.SERVICE.CREATE"
+EVENT_SERVICE_STATE_CHANGED: "jms:topic:EVENT.SERVICE.STATECHANGED"
+EVENT_SERVICE_DELETE: "jms:topic:EVENT.SERVICE.DELETE"
+EVENT_SERVICE_ATTRIBUTE_VALUE_CHANGED: "jms:topic:EVENT.SERVICE.ATTRCHANGED"
+EVENT_SERVICE_ORDER_CREATE: "jms:topic:EVENT.SERVICEORDER.CREATE"
+EVENT_SERVICE_ORDER_STATE_CHANGED: "jms:topic:EVENT.SERVICEORDER.STATECHANGED"
+EVENT_SERVICE_ORDER_DELETE: "jms:topic:EVENT.SERVICEORDER.DELETE"
+EVENT_SERVICE_ORDER_ATTRIBUTE_VALUE_CHANGED: "jms:topic:EVENT.SERVICEORDER.ATTRCHANGED"
+EVENT_CUSTOMER_CREATE: "jms:topic:EVENT.CUSTOMER.CREATE"
+EVENT_CUSTOMER_CHANGED: "jms:topic:EVENT.CUSTOMER.CHANGE"
+EVENT_INDIVIDUAL_CREATE: "jms:topic:EVENT.INDIVIDUAL.CREATE"
+EVENT_INDIVIDUAL_CHANGED: "jms:topic:EVENT.INDIVIDUAL.CHANGE"
+EVENT_ORGANIZATION_CREATE: "jms:topic:EVENT.ORGANIZATION.CREATE"
+EVENT_ORGANIZATION_CHANGED: "jms:topic:EVENT.ORGANIZATION.CHANGE"
+EVENT_ALARM_CREATE: "jms:topic:EVENT.ALARM.CREATE"
