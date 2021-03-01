@@ -96,6 +96,10 @@ public class RuleSpecificationRepoService {
 		return optionalCat.orElse(null);
 	}
 	
+	public List<RuleSpecification> findByScopeUuid(String uuid) {
+		return this.ruleSpecificationRepository.findByScopeEntityUUID( uuid );		
+	}
+	
 
 	private RuleSpecification updateRuleSpecificationFromAPICall(RuleSpecification as,
 			@Valid RuleSpecificationUpdate ruleSpecificationUpdate) {
@@ -187,4 +191,8 @@ public class RuleSpecificationRepoService {
 		
 		return as;
 	}
+
+
+
+
 }

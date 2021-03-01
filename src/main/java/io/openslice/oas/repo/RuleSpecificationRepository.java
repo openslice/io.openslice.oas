@@ -19,6 +19,7 @@
  */
 package io.openslice.oas.repo;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -31,6 +32,9 @@ public interface RuleSpecificationRepository  extends PagingAndSortingRepository
 
 	
 	Optional<RuleSpecification> findByUuid(String id);
+
+	
+	List<RuleSpecification> findByScopeEntityUUID(String uuid);
 
 	
 }

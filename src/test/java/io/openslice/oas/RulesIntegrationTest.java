@@ -191,9 +191,24 @@ public class RulesIntegrationTest {
 		assertThat(ruleSpec2.getActions().stream().findFirst().get().getActionId() ).isEqualTo( anAction.getUuid() );
 		assertThat(ruleSpec2.getScope().getEntityUUID()).isEqualTo("UUIDREFTEST2");
 		assertThat(ruleSpec2.getCondition().size()).isEqualTo(2);
+		
+		assertThat( ruleSpecificationRepoService.findByScopeUuid("UUIDREFTEST2").size()).isEqualTo(1);
 
+		scope.setEntityUUID( "UUIDREFTEST2" );
+		rule.setScope(scope);
+		responseRule = mvc
+				.perform(MockMvcRequestBuilders.post("/assuranceServicesManagement/v1/ruleSpecification")
+						.with(SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
+						.content( toJson( rule )))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("name", is("aRule")))
+				.andExpect(status().isOk()
+						).andReturn()
+				.getResponse().getContentAsString();
 		
 
+		assertThat( ruleSpecificationRepoService.findByScopeUuid("UUIDREFTEST2").size()).isEqualTo(2);
 	}
 	
 
