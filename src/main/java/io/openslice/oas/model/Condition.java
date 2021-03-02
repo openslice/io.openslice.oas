@@ -38,6 +38,13 @@ public class Condition {
 	@JsonProperty("eventAttributeValue")
 	String eventAttributeValue;
 
+	
+	/**
+	 * EQUAL
+	 * NOTEQUAL
+	 * GREATER_THAN
+	 * LESS_THAN
+	 */
 	@JsonProperty("operator")
 	String operator;
 }

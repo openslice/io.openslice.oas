@@ -1,6 +1,8 @@
 package io.openslice.oas;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,15 +18,17 @@ import io.openslice.oas.reposervices.RuleSpecificationRepoService;
 import io.openslice.tmf.am642.model.AffectedService;
 import io.openslice.tmf.am642.model.Alarm;
 import io.openslice.tmf.am642.model.AlarmCreateEvent;
+import lombok.extern.apachecommons.CommonsLog;
 
 /**
  * @author ctranoris
  *
  */
 @Configuration
+@CommonsLog
 public class AlarmHandling {
 
-	private static final transient Log logger = LogFactory.getLog(AlarmHandling.class.getName());
+	//private static final transient Log logger = LogFactory.getLog(AlarmHandling.class.getName());
 
 	@Autowired
 	RuleSpecificationRepoService ruleSpecificationRepoService;
@@ -42,7 +46,7 @@ public class AlarmHandling {
 		
 			
 			Alarm alarm = anAlarmCreateEvent.getEvent().getAlarm();
-			logger.info("onAlarmCreateEvent AlarmType=" + alarm.getAlarmType() 
+			log.info("onAlarmCreateEvent AlarmType=" + alarm.getAlarmType() 
 			+ ", ProbableCause=" + alarm.getProbableCause() 
 			+ ", PerceivedSeverity=" + alarm.getPerceivedSeverity()
 			+ ", SourceSystemId=" + alarm.getSourceSystemId() 
@@ -60,9 +64,9 @@ public class AlarmHandling {
 	private void performActionOnAlarm(Alarm alarm) {
 
 		//decide If we handle this.
-		ActionSpecification action = decideForExecutionAction( alarm );
+		var actions = decideForExecutionAction( alarm );
 		
-		if ( action == null ) { //we did not find an action to perform 
+		if ( actions == null ) { //we did not find an action to perform 
 			return;
 		}
 			
@@ -91,7 +95,7 @@ public class AlarmHandling {
 	 * 
 	 * 
 	 */
-	private ActionSpecification decideForExecutionAction(Alarm alarm) {
+	public List<ActionSpecificationRef> decideForExecutionAction(Alarm alarm) {
 
 		// examine our list of rulespecs if we can have a match for a specific service in inventory
 		// In future a rules engine should be more efficient. 
@@ -103,19 +107,70 @@ public class AlarmHandling {
 			var rulespecs = ruleSpecificationRepoService.findByScopeUuid( affectedService.getId() );
 			for (RuleSpecification ruleSpecification : rulespecs) {
 				
-				if (ruleSpecification.getCondition().size() == 0 ) { // if there are no conditions, this means any condition so add all of the actions!
-					actionsToApply.addAll( ruleSpecification.getActions()  );
-				}
+//				if (ruleSpecification.getCondition().size() == 0 ) { // if there are no conditions, this means any condition so add all of the actions!
+//					actionsToApply.addAll( ruleSpecification.getActions()  );
+//				}
+				
+				Boolean conditionInitialStatus = true; // if there are no conditions, this means any condition so add all of the actions!
 				
 				for (Condition condition : ruleSpecification.getCondition()) {
+
+					Boolean conditionStatus = false;
+					//match here the criteria		
+					try {
+						
+						
+						Field field = Alarm.class.getDeclaredField(condition.getOpensliceEventAttributeName());			
+						field.setAccessible(true);
+						String alarmvalue = field.get(alarm).toString();
+						String operator = condition.getOperator();
+						switch ( operator) {
+						case "EQUALS":
+							conditionStatus = alarmvalue == condition.getEventAttributeValue();
+							break;
+						case "NOTEQUAL":
+							conditionStatus = alarmvalue != condition.getEventAttributeValue();
+							break;
+						case "GREATER_THAN":
+							conditionStatus = Double.valueOf(alarmvalue) >  Double.valueOf( condition.getEventAttributeValue());
+							break;
+						case "LESS_THAN":
+							conditionStatus = Double.valueOf(alarmvalue) <  Double.valueOf( condition.getEventAttributeValue());
+							break;
 							
+						default:
+							break;
+						}
+						
+						
+						
+					} catch (NoSuchFieldException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SecurityException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					
-					//match here the criteria
-					
+					if (condition.getBooleanOperator().equals("OR") ) {
+						conditionInitialStatus = conditionInitialStatus || conditionStatus;						
+					} else {
+						conditionInitialStatus = conditionInitialStatus && conditionStatus;						
+					}
 				}			
 				
 				
 				
+				
+				if (conditionInitialStatus) {
+					actionsToApply.addAll( ruleSpecification.getActions()  );
+				}
 			}
 			
 		}
@@ -124,6 +179,6 @@ public class AlarmHandling {
 		
 		
 		
-		return null;
+		return actionsToApply;
 	}
 }

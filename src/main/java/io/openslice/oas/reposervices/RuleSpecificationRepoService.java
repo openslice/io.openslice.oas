@@ -164,10 +164,12 @@ public class RuleSpecificationRepoService {
 
 				boolean idexists = false;
 				for (ActionSpecificationRef orinalCom : as.getActions()) {
-					if (orinalCom.getUuid().equals(ar.getUuid())) {
-						idexists = true;
-						idAddedUpdated.put(orinalCom.getUuid(), true);
-						break;
+					if ( ar.getUuid() != null) {
+						if (orinalCom.getUuid().equals(ar.getUuid())) {
+							idexists = true;
+							idAddedUpdated.put(orinalCom.getUuid(), true);
+							break;
+						}						
 					}
 				}
 

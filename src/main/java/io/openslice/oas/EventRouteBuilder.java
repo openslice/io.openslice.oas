@@ -27,11 +27,9 @@ public class EventRouteBuilder extends RouteBuilder {
 
 
 		/**
-		 * Create user route, from Individual event
+		 * Create route, from event
 		 */
 		
-		
-
 		from( EVENT_ALARM_CREATE )
 		.unmarshal().json( JsonLibrary.Jackson, AlarmCreateEvent.class, true)
 		.bean( AlarmHandling.class, "onAlarmCreateEvent")
