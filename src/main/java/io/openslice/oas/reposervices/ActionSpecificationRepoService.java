@@ -1,5 +1,7 @@
 package io.openslice.oas.reposervices;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.openslice.oas.model.ActionParam;
 import io.openslice.oas.model.ActionSpecification;
 import io.openslice.oas.model.ActionSpecificationCreate;
 import io.openslice.oas.model.ActionSpecificationUpdate;
+import io.openslice.oas.model.Condition;
 import io.openslice.oas.repo.ActionSpecificationRepository;
 
 
@@ -100,6 +104,41 @@ public class ActionSpecificationRepoService {
 		
 		if ( actionSpecificationUpdate.getDescription() != null) {
 			as.setDescription( actionSpecificationUpdate.getDescription() );
+		}
+		
+		
+		if ( actionSpecificationUpdate.getParams()  != null) {
+			Map<String, Boolean> idAddedUpdated = new HashMap<>();
+
+			for (ActionParam ar : actionSpecificationUpdate.getParams() ) {
+				// find by id and reload it here.
+
+				boolean idexists = false;
+				for (ActionParam orinalCom : as.getParams()) {
+					if (ar.getUuid()!=null && orinalCom.getUuid().equals(ar.getUuid())) {
+						idexists = true;
+						idAddedUpdated.put(orinalCom.getUuid(), true);
+						break;
+					}
+				}
+
+				if (!idexists) {
+					as.getParams().add(ar);
+					idAddedUpdated.put(ar.getUuid(), true);
+				}
+			}
+
+			List<ActionParam> toRemove = new ArrayList<>();
+			for (ActionParam ss : as.getParams()) {
+				if (idAddedUpdated.get(ss.getUuid()) == null) {
+					toRemove.add(ss);
+				}
+			}
+
+			for (ActionParam ar : toRemove) {
+				as.getParams().remove(ar);
+			}
+
 		}
 
 		return as;

@@ -1,5 +1,10 @@
 package io.openslice.oas.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,6 +31,26 @@ public class ActionSpecificationUpdate {
 	@JsonProperty("description")
 	protected String description = null;
 	
+
+	@JsonProperty("params")
+	@Valid
+	private List<ActionParam> params = new ArrayList<>(); 
+	
+	
+	/**
+	 * @return the params
+	 */
+	public List<ActionParam> getParams() {
+		return params;
+	}
+
+	/**
+	 * @param params the params to set
+	 */
+	public void setParams(List<ActionParam> params) {
+		this.params = params;
+	}
+
 	/**
 	 * The name of the service test
 	 * 

@@ -53,6 +53,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.openslice.oas.model.ActionParam;
 import io.openslice.oas.model.ActionSpecification;
 import io.openslice.oas.model.ActionSpecificationCreate;
 import io.openslice.oas.model.ActionSpecificationRef;
@@ -102,6 +103,11 @@ public class RulesIntegrationTest {
 
 		ActionSpecificationCreate actionCreate = new ActionSpecificationCreate();
 		actionCreate.setName("scaleEqualy");
+		
+		ActionParam param = new ActionParam();
+		param.setParamName("Service");
+		param.setParamValue("UUID");
+		actionCreate.getParams().add(param );
 
 		String responseAction = mvc
 				.perform(MockMvcRequestBuilders.post("/assuranceServicesManagement/v1/actionSpecification")
@@ -114,6 +120,8 @@ public class RulesIntegrationTest {
 		assertThat(actionSpecificationRepoService.findAll().size()).isEqualTo(1);
 
 		ActionSpecification anAction = toJsonObj(responseAction, ActionSpecification.class);
+		assertThat(anAction.getParams().size()).isEqualTo(1);
+		
 		ActionSpecificationRef aref = new ActionSpecificationRef();
 		aref.setActionId(anAction.getUuid());
 
