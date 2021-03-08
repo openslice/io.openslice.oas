@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.openslice.oas.model.Action;
 import io.openslice.oas.model.ActionSpecification;
 import io.openslice.oas.model.ActionSpecificationRef;
 import io.openslice.oas.model.Condition;
@@ -82,6 +83,7 @@ public class RuleSpecificationRepoService {
 	}
 
 
+	@Transactional
 	public RuleSpecification findByUuid(String id) {
 		Optional<RuleSpecification> optionalCat = this.ruleSpecificationRepository.findByUuid(id);
 		return optionalCat.orElse(null);
@@ -90,12 +92,17 @@ public class RuleSpecificationRepoService {
 	public List<RuleSpecification> findAll(String myfields, @Valid Map<String, String> allParams) {
 		return findAll();
 	}
-
+	
+	
+	@Transactional 
 	public RuleSpecification findById(String id) {
 		Optional<RuleSpecification> optionalCat = this.ruleSpecificationRepository.findByUuid(id);
+		optionalCat.get().getActions();
+		optionalCat.get().getCondition() ;
 		return optionalCat.orElse(null);
 	}
-	
+
+	@Transactional
 	public List<RuleSpecification> findByScopeUuid(String uuid) {
 		return this.ruleSpecificationRepository.findByScopeEntityUUID( uuid );		
 	}
@@ -159,11 +166,11 @@ public class RuleSpecificationRepoService {
 		if ( ruleSpecificationUpdate.getActions()  != null) {
 			Map<String, Boolean> idAddedUpdated = new HashMap<>();
 
-			for (ActionSpecificationRef ar : ruleSpecificationUpdate.getActions()) {
+			for (Action ar : ruleSpecificationUpdate.getActions()) {
 				// find by id and reload it here.
 
 				boolean idexists = false;
-				for (ActionSpecificationRef orinalCom : as.getActions()) {
+				for (Action orinalCom : as.getActions()) {
 					if ( ar.getUuid() != null) {
 						if (orinalCom.getUuid().equals(ar.getUuid())) {
 							idexists = true;
@@ -179,14 +186,14 @@ public class RuleSpecificationRepoService {
 				}
 			}
 
-			List<ActionSpecificationRef> toRemove = new ArrayList<>();
-			for (ActionSpecificationRef ss : as.getActions()) {
+			List<Action> toRemove = new ArrayList<>();
+			for (Action ss : as.getActions()) {
 				if (idAddedUpdated.get(ss.getUuid()) == null) {
 					toRemove.add(ss);
 				}
 			}
 
-			for (ActionSpecificationRef ar : toRemove) {
+			for (Action ar : toRemove) {
 				as.getActions().remove(ar);
 			}
 		}

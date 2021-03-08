@@ -53,6 +53,8 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.openslice.oas.model.Action;
+import io.openslice.oas.model.ActionCharacteristic;
 import io.openslice.oas.model.ActionParam;
 import io.openslice.oas.model.ActionSpecification;
 import io.openslice.oas.model.ActionSpecificationCreate;
@@ -102,7 +104,7 @@ public class RulesIntegrationTest {
 	public void testRuleCreateAndUpdate() throws UnsupportedEncodingException, IOException, Exception {
 
 		ActionSpecificationCreate actionCreate = new ActionSpecificationCreate();
-		actionCreate.setName("scaleEqualy");
+		actionCreate.setName("scaleEqually");
 		
 		ActionParam param = new ActionParam();
 		param.setParamName("Service");
@@ -114,20 +116,30 @@ public class RulesIntegrationTest {
 						.with(SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
 						.content(toJson(actionCreate)))
 				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("name", is("scaleEqualy"))).andExpect(status().isOk()).andReturn().getResponse()
+				.andExpect(jsonPath("name", is("scaleEqually"))).andExpect(status().isOk()).andReturn().getResponse()
 				.getContentAsString();
 
 		assertThat(actionSpecificationRepoService.findAll().size()).isEqualTo(1);
 
-		ActionSpecification anAction = toJsonObj(responseAction, ActionSpecification.class);
-		assertThat(anAction.getParams().size()).isEqualTo(1);
+		ActionSpecification anActionSpecification = toJsonObj(responseAction, ActionSpecification.class);
+		assertThat(anActionSpecification.getParams().size()).isEqualTo(1);
 		
 		ActionSpecificationRef aref = new ActionSpecificationRef();
-		aref.setActionId(anAction.getUuid());
+		aref.setActionId(anActionSpecification.getUuid());
 
+		
+		
+		Action action = new Action();
+		action.setName( anActionSpecification.getName()  );
+		action.setActionSpecificationRef(aref);
+		ActionCharacteristic characteristic = new ActionCharacteristic();
+		characteristic.setName("ServiceID");
+		characteristic.setValue("AUUID");
+		action.getActionCharacteristics().add( characteristic  );
+		
 		RuleSpecificationCreate rule = new RuleSpecificationCreate();
 		rule.setName("aRule");
-		rule.getActions().add(aref);
+		rule.getActions().add( action );
 		rule.setDescription("Descr");
 		rule.setOpensliceEventType("AlarmCreateEvent");
 		Scope scope = new Scope();
@@ -163,13 +175,13 @@ public class RulesIntegrationTest {
 
 		assertThat(ruleSpec.getName()).isEqualTo("aRule");
 		assertThat(ruleSpec.getOpensliceEventType()).isEqualTo("AlarmCreateEvent");
-		assertThat(ruleSpec.getActions().stream().findFirst().get().getActionId()).isEqualTo(anAction.getUuid());
+		assertThat(ruleSpec.getActions().stream().findFirst().get().getActionSpecificationRef().getActionId() ).isEqualTo(anActionSpecification.getUuid());
 		assertThat(ruleSpec.getScope().getEntityUUID()).isEqualTo("UUIDREFTEST");
 		assertThat(ruleSpec.getCondition().size()).isEqualTo(2);
 
 		RuleSpecificationUpdate ruleUpd = new RuleSpecificationUpdate();
 		ruleUpd.setName("aRule2");
-		ruleUpd.getActions().add(aref);
+		ruleUpd.getActions().add(action);
 		ruleUpd.setDescription("Descr2");
 		ruleUpd.setOpensliceEventType("AlarmCreateEvent2");
 		Scope scope2 = new Scope();
@@ -191,7 +203,7 @@ public class RulesIntegrationTest {
 
 		assertThat(ruleSpec2.getName()).isEqualTo("aRule2");
 		assertThat(ruleSpec2.getOpensliceEventType()).isEqualTo("AlarmCreateEvent2");
-		assertThat(ruleSpec2.getActions().stream().findFirst().get().getActionId()).isEqualTo(anAction.getUuid());
+		assertThat(ruleSpec2.getActions().stream().findFirst().get().getActionSpecificationRef().getActionId()).isEqualTo(anActionSpecification.getUuid());
 		assertThat(ruleSpec2.getScope().getEntityUUID()).isEqualTo("UUIDREFTEST2");
 		assertThat(ruleSpec2.getCondition().size()).isEqualTo(2);
 
@@ -213,15 +225,15 @@ public class RulesIntegrationTest {
 	@Test
 	public void testAlarmHandling() {
 		// create some Actions Specs
-		ActionSpecificationCreate actionCreate = new ActionSpecificationCreate();
-		actionCreate.setName("sendEmail");
-		var act1 = actionSpecificationRepoService.addActionSpecification(actionCreate);
-		actionCreate = new ActionSpecificationCreate();
-		actionCreate.setName("scaleEqualy");
-		var act2 = actionSpecificationRepoService.addActionSpecification(actionCreate);
-		actionCreate = new ActionSpecificationCreate();
-		actionCreate.setName("callHuman");
-		var act3 = actionSpecificationRepoService.addActionSpecification(actionCreate);
+		ActionSpecificationCreate actionSpecCreate = new ActionSpecificationCreate();
+		actionSpecCreate.setName("sendEmail");
+		var act1 = actionSpecificationRepoService.addActionSpecification(actionSpecCreate);
+		actionSpecCreate = new ActionSpecificationCreate();
+		actionSpecCreate.setName("scaleEqualy");
+		var act2 = actionSpecificationRepoService.addActionSpecification(actionSpecCreate);
+		actionSpecCreate = new ActionSpecificationCreate();
+		actionSpecCreate.setName("callHuman");
+		var act3 = actionSpecificationRepoService.addActionSpecification(actionSpecCreate);
 		assertThat(actionSpecificationRepoService.findAll().size()).isEqualTo(3);
 		// create some RuleSpecs and add to repo
 
@@ -229,10 +241,26 @@ public class RulesIntegrationTest {
 		rule01wConditions.setName("aRule01");
 		var aref = new ActionSpecificationRef();
 		aref.setActionId(act1.getUuid());
-		rule01wConditions.getActions().add(aref);
+		Action action = new Action();
+		action.setName( act1.getName()  );
+		action.setActionSpecificationRef(aref);
+		ActionCharacteristic characteristic = new ActionCharacteristic();
+		characteristic.setName("ServiceID");
+		characteristic.setValue("AUUID");
+		action.getActionCharacteristics().add( characteristic  );
+		rule01wConditions.getActions().add(action);
+		
+
 		var aref2 = new ActionSpecificationRef();
 		aref2.setActionId(act2.getUuid());
-		rule01wConditions.getActions().add(aref2);
+		action = new Action();
+		action.setName( act2.getName()  );
+		action.setActionSpecificationRef(aref2);
+		characteristic = new ActionCharacteristic();
+		characteristic.setName("ServiceID");
+		characteristic.setValue("AUUID");
+		action.getActionCharacteristics().add( characteristic  );
+		rule01wConditions.getActions().add(action);
 		rule01wConditions.setDescription("Descr");
 		rule01wConditions.setOpensliceEventType("AlarmCreateEvent");
 		Scope scope = new Scope();
@@ -296,7 +324,15 @@ public class RulesIntegrationTest {
 		rule02NoConditions.setName("aRule02");
 		var aref3 = new ActionSpecificationRef();
 		aref3.setActionId(act3.getUuid());
-		rule02NoConditions.getActions().add(aref3);
+		
+		action = new Action();
+		action.setName( act3.getName()  );
+		action.setActionSpecificationRef(aref3);
+		characteristic = new ActionCharacteristic();
+		characteristic.setName("ServiceID");
+		characteristic.setValue("AUUID");
+		action.getActionCharacteristics().add( characteristic  );		
+		rule02NoConditions.getActions().add(action);
 		rule02NoConditions.setDescription("Descr");
 		rule02NoConditions.setOpensliceEventType("AlarmCreateEvent");
 		scope = new Scope();

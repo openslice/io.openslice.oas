@@ -38,7 +38,7 @@ public class RuleSpecificationUpdate {
 
 	@JsonProperty("actions")
 	@Valid
-	private List<ActionSpecificationRef> actions = new ArrayList<>(); 
+	private List<Action> actions = new ArrayList<>(); 
 
 	@JsonProperty("scope")
 	Scope scope;

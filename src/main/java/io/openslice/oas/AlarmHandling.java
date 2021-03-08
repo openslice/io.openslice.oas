@@ -1,14 +1,18 @@
 package io.openslice.oas;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.Transactional;
 
+import io.openslice.oas.model.Action;
 import io.openslice.oas.model.ActionSpecification;
 import io.openslice.oas.model.ActionSpecificationRef;
 import io.openslice.oas.model.Condition;
@@ -18,6 +22,9 @@ import io.openslice.oas.reposervices.RuleSpecificationRepoService;
 import io.openslice.tmf.am642.model.AffectedService;
 import io.openslice.tmf.am642.model.Alarm;
 import io.openslice.tmf.am642.model.AlarmCreateEvent;
+import io.openslice.tmf.am642.model.AlarmStateType;
+import io.openslice.tmf.am642.model.AlarmUpdate;
+import io.openslice.tmf.am642.model.Comment;
 import lombok.extern.apachecommons.CommonsLog;
 
 /**
@@ -28,7 +35,6 @@ import lombok.extern.apachecommons.CommonsLog;
 @CommonsLog
 public class AlarmHandling {
 
-	//private static final transient Log logger = LogFactory.getLog(AlarmHandling.class.getName());
 
 	@Autowired
 	RuleSpecificationRepoService ruleSpecificationRepoService;
@@ -36,7 +42,13 @@ public class AlarmHandling {
 	@Autowired
 	ActionSpecificationRepoService actionSpecificationRepoService;
 
-	
+	@Autowired
+	AlarmsService alarmsService;
+
+	@Value("${spring.application.name}")
+	private String compname;
+
+	@Transactional 
 	public void onAlarmCreateEvent(AlarmCreateEvent anAlarmCreateEvent) {
 		
 		
@@ -61,17 +73,22 @@ public class AlarmHandling {
 		
 	}
 
-	private void performActionOnAlarm(Alarm alarm) {
+	@Transactional 
+	public void performActionOnAlarm(Alarm alarm) {
 
 		//decide If we handle this.
 		var actions = decideForExecutionAction( alarm );
 		
-		if ( actions == null ) { //we did not find an action to perform 
+		if ( ( actions == null ) || ( actions.size() == 0 )) { //we did not find an action to perform 
+			patchAlarm(alarm, false, null);
 			return;
 		}
+		
 			
-		// send ack to the alarm management
 
+		patchAlarm(alarm, true, actions);
+		
+		// send ack to the alarm management
 		
 		//patch alarm
 //		ackState( "acknowledged" )
@@ -85,7 +102,6 @@ public class AlarmHandling {
 		
 	}
 	
-	
 
 	/**
 	 * @param alarm
@@ -95,17 +111,19 @@ public class AlarmHandling {
 	 * 
 	 * 
 	 */
-	public List<ActionSpecificationRef> decideForExecutionAction(Alarm alarm) {
+	@Transactional 
+	public List<Action> decideForExecutionAction(Alarm alarm) {
 
 		// examine our list of rulespecs if we can have a match for a specific service in inventory
 		// In future a rules engine should be more efficient. 
 		//	For now and for our PoC we will use query in DB and search the attributes			
 
-		var actionsToApply = new ArrayList<ActionSpecificationRef>();
+		var actionsToApply = new ArrayList<Action>();
 		
 		for (AffectedService affectedService : alarm.getAffectedService()) {
 			var rulespecs = ruleSpecificationRepoService.findByScopeUuid( affectedService.getId() );
 			for (RuleSpecification ruleSpecification : rulespecs) {
+				RuleSpecification spec = ruleSpecificationRepoService.findById( ruleSpecification.getUuid() );
 				
 //				if (ruleSpecification.getCondition().size() == 0 ) { // if there are no conditions, this means any condition so add all of the actions!
 //					actionsToApply.addAll( ruleSpecification.getActions()  );
@@ -113,7 +131,7 @@ public class AlarmHandling {
 				
 				Boolean conditionInitialStatus = true; // if there are no conditions, this means any condition so add all of the actions!
 				
-				for (Condition condition : ruleSpecification.getCondition()) {
+				for (Condition condition : spec.getCondition()) {
 
 					Boolean conditionStatus = false;
 					//match here the criteria		
@@ -181,4 +199,42 @@ public class AlarmHandling {
 		
 		return actionsToApply;
 	}
+	
+	
+
+	
+
+	private void patchAlarm(Alarm alarm, boolean canBehandled, List<Action> actions) {
+		AlarmUpdate aupd = new AlarmUpdate();
+		Comment comment = new Comment();
+		comment.setTime(OffsetDateTime.now(ZoneOffset.UTC));
+		comment.setSystemId(compname);
+		
+		if (canBehandled) {
+			aupd.setAckState("acknowledged");
+			aupd.setAckSystemId( compname );
+			
+			String[] names = actions.stream().map(p -> p.getName() ).toArray( size -> new String[actions.size()] );
+			String acts = String.join(",", names);			
+			comment.setComment("Alarm handled automatically, by applying actions: " + acts);
+			
+		}else {
+
+			comment.setComment("Alarm cannot be handled automatically");
+			
+		}
+		aupd.setState(AlarmStateType.updated.name());		
+
+		aupd.addCommentItem(comment);		
+
+		try {
+			log.info("Alarm id = " + alarm.getId() + "." + comment.getComment());
+			String response = alarmsService.updateAlarm(aupd, alarm.getId());
+		} catch (IOException e) {
+			log.error("patchAlarm Alarm id = " + alarm.getId() );
+			e.printStackTrace();
+		}
+	}
+	
+	
 }

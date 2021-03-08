@@ -56,7 +56,7 @@ public class RuleSpecification {
 	@JsonProperty("actions")
 	@Valid
 	@OneToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
-	private Set<ActionSpecificationRef> actions = new HashSet<>(); 
+	private Set<Action> actions = new HashSet<>(); 
 	
 	@JsonProperty("scope")
 	Scope scope;
