@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.openslice.oas.model.Action;
-import io.openslice.oas.model.ActionSpecification;
-import io.openslice.oas.model.ActionSpecificationRef;
+import io.openslice.oas.model.ActionCharacteristic;
 import io.openslice.oas.model.Condition;
 import io.openslice.oas.model.RuleSpecification;
 import io.openslice.oas.reposervices.ActionSpecificationRepoService;
@@ -25,6 +28,11 @@ import io.openslice.tmf.am642.model.AlarmCreateEvent;
 import io.openslice.tmf.am642.model.AlarmStateType;
 import io.openslice.tmf.am642.model.AlarmUpdate;
 import io.openslice.tmf.am642.model.Comment;
+import io.openslice.tmf.common.model.Any;
+import io.openslice.tmf.common.model.EValueType;
+import io.openslice.tmf.common.model.service.Characteristic;
+import io.openslice.tmf.common.model.service.Note;
+import io.openslice.tmf.sim638.model.ServiceUpdate;
 import lombok.extern.apachecommons.CommonsLog;
 
 /**
@@ -44,6 +52,9 @@ public class AlarmHandling {
 
 	@Autowired
 	AlarmsService alarmsService;
+	
+	@Autowired
+	CatalogService catalogService;
 
 	@Value("${spring.application.name}")
 	private String compname;
@@ -97,6 +108,8 @@ public class AlarmHandling {
 //		- comment (“specific action made”
 		
 		//execute the desired action
+		
+		executeActions(actions,alarm);
 				
 		//if action is successful clear alarm
 		
@@ -144,10 +157,10 @@ public class AlarmHandling {
 						String operator = condition.getOperator();
 						switch ( operator) {
 						case "EQUALS":
-							conditionStatus = alarmvalue == condition.getEventAttributeValue();
+							conditionStatus = alarmvalue.equals( condition.getEventAttributeValue() );
 							break;
 						case "NOTEQUAL":
-							conditionStatus = alarmvalue != condition.getEventAttributeValue();
+							conditionStatus = ! alarmvalue.equals( condition.getEventAttributeValue() );
 							break;
 						case "GREATER_THAN":
 							conditionStatus = Double.valueOf(alarmvalue) >  Double.valueOf( condition.getEventAttributeValue());
@@ -204,6 +217,13 @@ public class AlarmHandling {
 
 	
 
+	/**
+	 * update the alarm status in alarm repo
+	 * 
+	 * @param alarm
+	 * @param canBehandled
+	 * @param actions
+	 */
 	private void patchAlarm(Alarm alarm, boolean canBehandled, List<Action> actions) {
 		AlarmUpdate aupd = new AlarmUpdate();
 		Comment comment = new Comment();
@@ -236,5 +256,72 @@ public class AlarmHandling {
 		}
 	}
 	
+
+
+	/**
+	 * execute each action, by passing it as a ServiceUpdate to the system
+	 * @param actions
+	 * @param alarm 
+	 */
+	private void executeActions(List<Action> actions, Alarm alarm) {
+		
+		for (Action action : actions) {
+
+			ServiceUpdate supd = new ServiceUpdate();;
+			Note n = new Note();
+			n.setText("Service Action executeAction. Action: " + action.getName() + ", for acknowledged alarm " + alarm.getUuid() );
+			n.setAuthor( compname );
+			n.setDate( OffsetDateTime.now(ZoneOffset.UTC).toString() );
+			supd.addNoteItem( n );
+			String serviceid= null;
+			
+			Characteristic characteristic = new Characteristic();
+			characteristic.setName("EXEC_ACTION");
+			characteristic.setValueType(  EValueType.MAP.getValue()  );
+			var map = new HashMap<String, String>();
+			map.put("ACTION_NAME", action.getName());
+			map.put("ACTION_UUID", action.getUuid() );
+			map.put("ALARM_UUID", alarm.getUuid() );
+			for (ActionCharacteristic achar : action.getActionCharacteristics() ) {
+				if ( achar.getName().equalsIgnoreCase("serviceid")) {
+					serviceid = achar.getValue(); 
+				}
+				map.put( achar.getName() , achar.getValue() );
+			}
+			map.put("ALARM_DETAILS", alarm.getAlarmDetails());
+			
+			String[] tokens = alarm.getAlarmDetails().split(";");
+			for (String token : tokens) {
+				String[] kv = token.split("=");
+				if ( kv.length == 2) {
+					map.put( kv[0], kv[1]);					
+				}
+			}
+
+			Any value = new Any();
+			String str;
+			try {
+				str = toJsonString( map );
+				value.setValue( str );				
+				characteristic.setValue( value  );
+				supd.addServiceCharacteristicItem( characteristic );				
+				if ( serviceid != null ) {
+					catalogService.updateService( serviceid , supd, true);				
+				}
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
+	
+	static String toJsonString(Object object) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return mapper.writeValueAsString(object);
+    }
+
 	
 }

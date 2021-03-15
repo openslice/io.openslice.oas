@@ -26,13 +26,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,7 +68,6 @@ import io.openslice.oas.reposervices.ActionSpecificationRepoService;
 import io.openslice.oas.reposervices.RuleSpecificationRepoService;
 import io.openslice.tmf.am642.model.AffectedService;
 import io.openslice.tmf.am642.model.Alarm;
-import io.openslice.tmf.am642.model.AlarmCreateEvent;
 import lombok.extern.apachecommons.CommonsLog;
 
 @RunWith(SpringRunner.class)
@@ -220,6 +219,61 @@ public class RulesIntegrationTest {
 				.getContentAsString();
 
 		assertThat(ruleSpecificationRepoService.findByScopeUuid("UUIDREFTEST2").size()).isEqualTo(2);
+		
+		
+		
+		
+	}
+	
+
+	@WithMockUser(username = "osadmin", roles = { "ADMIN", "USER" })
+	@Test
+	public void testRuleCreateFromFiles() throws UnsupportedEncodingException, IOException, Exception {
+	
+		File faction = new File( "src/test/resources/testAction.json" );
+		InputStream in = new FileInputStream( faction );
+		String resvxf = IOUtils.toString(in, "UTF-8");
+		
+		ActionSpecificationCreate aspec = toJsonObj( resvxf,  ActionSpecificationCreate.class);
+		
+		String responseAction = mvc
+				.perform(MockMvcRequestBuilders.post("/assuranceServicesManagement/v1/actionSpecification")
+						.with(SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
+						.content(toJson( aspec )))
+				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("name", is("scaleServiceEqually"))).andExpect(status().isOk()).andReturn().getResponse()
+				.getContentAsString();
+
+		assertThat(actionSpecificationRepoService.findAll().size()).isEqualTo(1);
+
+		ActionSpecification anActionSpecification = toJsonObj(responseAction, ActionSpecification.class);
+		
+		File scatalog = new File( "src/test/resources/testRule.json" );
+		in = new FileInputStream( scatalog );
+		resvxf = IOUtils.toString(in, "UTF-8");
+		
+		RuleSpecificationCreate scc = toJsonObj( resvxf,  RuleSpecificationCreate.class);
+		
+		scc.getActions().get(0).getActionSpecificationRef().setActionId(anActionSpecification.getUuid()  );
+
+		String responseRule = mvc
+				.perform(MockMvcRequestBuilders.post("/assuranceServicesManagement/v1/ruleSpecification")
+						.with(SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
+						.content(toJson(scc)))
+				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("name", is("Threshold Alarm on frontend"))).andExpect(status().isOk()).andReturn().getResponse()
+				.getContentAsString();
+
+		assertThat(ruleSpecificationRepoService.findAll().size()).isEqualTo(1);
+
+		RuleSpecification ruleSpec3 = toJsonObj(responseRule, RuleSpecification.class);
+
+		assertThat(ruleSpec3.getName()).isEqualTo("Threshold Alarm on frontend");
+		assertThat(ruleSpec3.getOpensliceEventType()).isEqualTo("AlarmCreateEvent");
+		assertThat(ruleSpec3.getActions().stream().findFirst().get().getActionSpecificationRef().getActionId()).isEqualTo(anActionSpecification.getUuid());
+		assertThat(ruleSpec3.getScope().getEntityUUID()).isEqualTo("eb2bd384-3ed1-4605-a69c-bd5b887f396c");
+		assertThat(ruleSpec3.getCondition().size()).isEqualTo(4);
+		
 	}
 
 	@Test
