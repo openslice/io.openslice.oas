@@ -1,0 +1,18 @@
+{
+  "name": "scaleServiceEqually",
+  "description": null,
+  "params": [
+    {
+      "paramName": "serviceID",
+      "paramValue": null
+    },
+    {
+      "paramName": "Member_vnf_index",
+      "paramValue": null
+    },
+    {
+      "paramName": "Scaling_group_descriptor",
+      "paramValue": null
+    }
+  ]
+}

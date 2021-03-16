@@ -1,0 +1,56 @@
+{
+  "actions": [
+    {
+      "name": "scaleServiceEqually",
+      "actionSpecificationRef": {
+        "actionId": "118a3d29-0067-4e69-92a2-95c9e3f69310"
+      },
+      "actionCharacteristics": [
+        {
+          "name": "serviceID",
+          "value": "111"
+        },
+        {
+          "name": "Member_vnf_index",
+          "value": "1"
+        },
+        {
+          "name": "Scaling_group_descriptor",
+          "value": "Wserver_autoscale"
+        }
+      ]
+    }
+  ],
+  "condition": [
+    {
+      "booleanOperator": "AND",
+      "eventAttributeName": "sourceSystemId",
+      "eventAttributeValue": "mano-client-service",
+      "operator": "EQUALS"
+    },
+    {
+      "booleanOperator": "AND",
+      "eventAttributeName": "perceivedSeverity",
+      "eventAttributeValue": "critical",
+      "operator": "EQUALS"
+    },
+    {
+      "booleanOperator": "AND",
+      "eventAttributeName": "alarmType",
+      "eventAttributeValue": "qualityOfServiceAlarm",
+      "operator": "EQUALS"
+    },
+    {
+      "booleanOperator": "AND",
+      "eventAttributeName": "probableCause",
+      "eventAttributeValue": "thresholdCrossed",
+      "operator": "EQUALS"
+    }
+  ],
+  "description": "",
+  "eventType": "AlarmCreateEvent",
+  "name": "Threshold Alarm on frontend",
+  "scope": {
+    "entityUUID": "eb2bd384-3ed1-4605-a69c-bd5b887f396c"
+  }
+}
