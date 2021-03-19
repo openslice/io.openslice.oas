@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.openslice.oas.model.Action;
 import io.openslice.oas.model.ActionCharacteristic;
+import io.openslice.oas.model.ActionExecutionStatus;
 import io.openslice.oas.model.Condition;
 import io.openslice.oas.model.RuleSpecification;
 import io.openslice.oas.reposervices.ActionSpecificationRepoService;
@@ -91,28 +92,21 @@ public class AlarmHandling {
 		var actions = decideForExecutionAction( alarm );
 		
 		if ( ( actions == null ) || ( actions.size() == 0 )) { //we did not find an action to perform 
-			patchAlarm(alarm, false, null);
+			alarmsService.patchAlarmAck(alarm, false, null);
 			return;
 		}
 		
 			
 
-		patchAlarm(alarm, true, actions);
-		
 		// send ack to the alarm management
+		alarmsService.patchAlarmAck(alarm, true, actions);
 		
-		//patch alarm
-//		ackState( "acknowledged" )
-//		- serviceAffecting = true
-//		- affectedService (id = serv_inventory_ID)
-//		- comment (“specific action made”
-		
-		//execute the desired action
-		
+		//execute the desired action		
 		executeActions(actions,alarm);
 				
 		//if action is successful clear alarm
-		
+		//clear probably will be done by process CheckActionsStatus
+		//by checking the EXEC_ACTION_LAST_ACK on related service, by serviceId 
 	}
 	
 
@@ -217,44 +211,6 @@ public class AlarmHandling {
 
 	
 
-	/**
-	 * update the alarm status in alarm repo
-	 * 
-	 * @param alarm
-	 * @param canBehandled
-	 * @param actions
-	 */
-	private void patchAlarm(Alarm alarm, boolean canBehandled, List<Action> actions) {
-		AlarmUpdate aupd = new AlarmUpdate();
-		Comment comment = new Comment();
-		comment.setTime(OffsetDateTime.now(ZoneOffset.UTC));
-		comment.setSystemId(compname);
-		
-		if (canBehandled) {
-			aupd.setAckState("acknowledged");
-			aupd.setAckSystemId( compname );
-			
-			String[] names = actions.stream().map(p -> p.getName() ).toArray( size -> new String[actions.size()] );
-			String acts = String.join(",", names);			
-			comment.setComment("Alarm handled automatically, by applying actions: " + acts);
-			
-		}else {
-
-			comment.setComment("Alarm cannot be handled automatically");
-			
-		}
-		aupd.setState(AlarmStateType.updated.name());		
-
-		aupd.addCommentItem(comment);		
-
-		try {
-			log.info("Alarm id = " + alarm.getId() + "." + comment.getComment());
-			String response = alarmsService.updateAlarm(aupd, alarm.getId());
-		} catch (IOException e) {
-			log.error("patchAlarm Alarm id = " + alarm.getId() );
-			e.printStackTrace();
-		}
-	}
 	
 
 
@@ -264,6 +220,8 @@ public class AlarmHandling {
 	 * @param alarm 
 	 */
 	private void executeActions(List<Action> actions, Alarm alarm) {
+
+		List<ActionExecutionStatus> actList= new ArrayList<>();
 		
 		for (Action action : actions) {
 
@@ -313,7 +271,16 @@ public class AlarmHandling {
 				e.printStackTrace();
 			}
 			
+			ActionExecutionStatus aes = new ActionExecutionStatus();
+			aes.setAction(action);
+			aes.setServiceId(serviceid);
+			actList.add( aes  );
+			
 		}
+		
+
+		//add to list of Alarms to Check the Actions in order to clear it or unack it!
+		alarmsService.getPendingAlarmsToCheck().put( alarm.getId() , actList);
 		
 	}
 	
