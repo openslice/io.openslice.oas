@@ -19,9 +19,14 @@
  */
 package io.openslice.oas;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
+import org.flowable.engine.repository.Deployment;
+import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
@@ -76,11 +81,37 @@ public class OasSpingBoot implements CommandLineRunner {
         return new CommandLineRunner() {
             @Override
             public void run(String... strings) throws Exception {
-                System.out.println("Number of process definitions : "
-                    + repositoryService.createProcessDefinitionQuery().count());
-                System.out.println("Number of tasks : " + taskService.createTaskQuery().count());
-//                runtimeService.startProcessInstanceByKey("oneTaskProcess");
-//                System.out.println("Number of tasks after process start: " + taskService.createTaskQuery().count());
+//                System.out.println("Number of process definitions : " + repositoryService.createProcessDefinitionQuery().count());
+//                System.out.println("Number of active process definitions : " + repositoryService.createProcessDefinitionQuery().active().count() );
+//                System.out.println("Number of active/suspended process definitions : " + repositoryService.createProcessDefinitionQuery().active().suspended().count());
+//                System.out.println("Number of suspended process definitions : " + repositoryService.createProcessDefinitionQuery().suspended().count() );
+//                System.out.println("Number of tasks : " + taskService.createTaskQuery().count());
+//                System.out.println("Number of process instances : " + runtimeService.createProcessInstanceQuery().count() );
+//                System.out.println("Number of suspended process instances : " + runtimeService.createProcessInstanceQuery().suspended().count() );
+//        		System.out.println("Number of tasks after process start: " + taskService.createTaskQuery().count());
+//        		
+//        		
+//        		List<ProcessDefinition> pr = repositoryService.createProcessDefinitionQuery().list();
+//        		for (ProcessDefinition processDefinition : Collections.unmodifiableList(pr) ) {
+//            		System.out.println("Number of tasks after process start: " + processDefinition.getDeploymentId() );
+//            		System.out.println("Number of tasks after process start: " + processDefinition.toString()  );
+//            		System.out.println("Number of tasks after process start: " + processDefinition.isSuspended()  );
+////            		try {
+////                		repositoryService.deleteDeployment( processDefinition.getDeploymentId(), true );            			
+////            		}finally {
+////            			
+////            		}
+//					
+//				}
+//        		
+//        		List<Deployment> dq = repositoryService.createDeploymentQuery().list();
+//        		for (Deployment deployment : dq) {
+//            		System.out.println("deployment: " + deployment.getName());
+//            		System.out.println("deployment: " + deployment.toString() );
+//            		System.out.println("deployment: " + deployment.isNew() );
+////            		repositoryService.deleteDeployment( deployment.getId() , true );   
+//					
+//				}
             }
         };
     }

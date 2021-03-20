@@ -150,8 +150,11 @@ public class AlarmsService {
 		
 		logger.info("will retrieve Alarm from id=" + alarmid   );
 		try {
+
+			Map<String, Object> map = new HashMap<>();
+			map.put("alarmid", alarmid );
 			Object response = template.
-					requestBody( ALARMS_GET_ALARM, alarmid);
+					requestBodyAndHeaders( ALARMS_GET_ALARM, "" , map);
 			
 			if ( !(response instanceof String)) {
 				logger.error("Alarm object is wrong.");
