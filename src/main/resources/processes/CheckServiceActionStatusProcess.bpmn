@@ -3,7 +3,7 @@
   <process id="CheckServiceActionStatusProcess" name="CheckServiceActionStatus process" isExecutable="true">
     <startEvent id="timerstartevent1" name="Timer start">
       <timerEventDefinition>
-        <timeCycle>0/10 * * * * ?</timeCycle>
+        <timeCycle>0/30 * * * * ?</timeCycle>
       </timerEventDefinition>
     </startEvent>
     <serviceTask id="servicetaskCheckActionsStatus" name="Service Task CheckActionsStatus " activiti:delegateExpression="${CheckActionsStatus}"></serviceTask>
