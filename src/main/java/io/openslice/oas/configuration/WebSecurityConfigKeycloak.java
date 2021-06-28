@@ -20,6 +20,8 @@
 package io.openslice.oas.configuration;
 
 
+import java.util.Collections;
+
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
@@ -124,8 +126,8 @@ public class WebSecurityConfigKeycloak extends KeycloakWebSecurityConfigurerAdap
 
 	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 	    CorsConfiguration config = new CorsConfiguration();
-	    config.setAllowCredentials(false);
-	    config.addAllowedOrigin("*");
+	    config.setAllowCredentials(true);
+	    config.setAllowedOriginPatterns(Collections.singletonList("*"));
 	    config.addAllowedHeader("*");
 	    config.addAllowedMethod("*");
 	    source.registerCorsConfiguration("/**", config);
