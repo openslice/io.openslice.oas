@@ -246,15 +246,20 @@ public class AlarmHandling {
 				}
 				map.put( achar.getName() , achar.getValue() );
 			}
-			map.put("ALARM_DETAILS", alarm.getAlarmDetails());
 			
-			String[] tokens = alarm.getAlarmDetails().split(";");
-			for (String token : tokens) {
-				String[] kv = token.split("=");
-				if ( kv.length == 2) {
-					map.put( kv[0], kv[1]);					
-				}
+			
+			if ( alarm.getAlarmDetails() !=null ) {
+				map.put("ALARM_DETAILS", alarm.getAlarmDetails());
+				
+				String[] tokens = alarm.getAlarmDetails().split(";");
+				for (String token : tokens) {
+					String[] kv = token.split("=");
+					if ( kv.length == 2) {
+						map.put( kv[0], kv[1]);					
+					}
+				}				
 			}
+			
 
 			Any value = new Any();
 			String str;
