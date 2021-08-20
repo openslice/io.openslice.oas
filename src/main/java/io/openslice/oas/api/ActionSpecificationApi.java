@@ -67,7 +67,7 @@ public interface ActionSpecificationApi {
 
 	@ApiOperation(value = "Deletes an ActionSpecification", nickname = "deleteActionSpecification", notes = "This operation deletes a ActionSpecification entity.", tags = {
 			"actionSpecification", })
-	@ApiResponses(value = { @ApiResponse(code = 204, message = "Deleted"),
+	@ApiResponses(value = { @ApiResponse(code = 204, message = "Deleted", response = Object.class),
 			@ApiResponse(code = 400, message = "Bad Request", response = Error.class),
 			@ApiResponse(code = 401, message = "Unauthorized", response = Error.class),
 			@ApiResponse(code = 403, message = "Forbidden", response = Error.class),
