@@ -247,6 +247,7 @@
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-oas</artifactId>
+			<version>3.0.0</version>
         </dependency>
 
        
