@@ -229,6 +229,11 @@
 		<!-- swagger -->
 		<dependency>
 			<groupId>io.springfox</groupId>
+			<artifactId>springfox-boot-starter</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
@@ -238,7 +243,18 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
+		
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-oas</artifactId>
+        </dependency>
 
+       
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-spring-web</artifactId>
+			<version>${swagger.version}</version>
+        </dependency>
 
 
 		<!-- Testing -->
@@ -287,8 +303,8 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<configuration>
-						<source>11</source>
-						<target>11</target>
+						<source>15</source>
+						<target>15</target>
 						<annotationProcessorPaths>
 							<path>
 								<groupId>org.projectlombok</groupId>
