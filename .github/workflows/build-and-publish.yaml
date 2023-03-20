@@ -28,7 +28,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: Dockerfile
           tags: |
             openslice/io.openslice.oas:${{ github.ref == 'refs/heads/master' && 'latest' || github.ref == 'refs/heads/develop' && 'nightly' }}
           push: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop'}}
