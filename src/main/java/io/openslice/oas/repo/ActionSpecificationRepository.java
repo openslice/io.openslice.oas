@@ -21,13 +21,13 @@ package io.openslice.oas.repo;
 
 import java.util.Optional;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import io.openslice.oas.model.ActionSpecification;
 
 @Repository
-public interface ActionSpecificationRepository  extends PagingAndSortingRepository<ActionSpecification, Long> {
+public interface ActionSpecificationRepository  extends CrudRepository<ActionSpecification, Long> {
 
 	
 	Optional<ActionSpecification> findByUuid(String id);

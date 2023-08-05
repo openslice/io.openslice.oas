@@ -19,7 +19,7 @@
  */
 package io.openslice.oas.configuration;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 
 import org.apache.camel.component.activemq.ActiveMQComponent;
 import org.springframework.context.annotation.Bean;

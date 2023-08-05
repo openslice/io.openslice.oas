@@ -1,25 +1,22 @@
 package io.openslice.oas.model;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.OneToMany;
-import javax.validation.Valid;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.Valid;
 import lombok.Data;
 
 /**
@@ -28,7 +25,7 @@ import lombok.Data;
  * An ActionSpecification is an entity that describes an action to perform on certain entities
  *
  */
-@ApiModel(description = "An ActionSpecification is an entity that describes an action to perform on certain entities.")
+@Schema(description = "An ActionSpecification is an entity that describes an action to perform on certain entities.")
 @Validated
 @Entity(name = "OASActionSpec")
 @Data

@@ -1,15 +1,14 @@
 package io.openslice.oas.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.Data;
 
 /**
@@ -18,7 +17,7 @@ import lombok.Data;
  * A Condition is an entity that describes the condition that must be tru in order to apply an action
  *
  */
-@ApiModel(description = "A Condition is an entity that describes the condition that must be tru in order to apply an action.")
+@Schema(description = "A Condition is an entity that describes the condition that must be tru in order to apply an action.")
 @Validated
 @Entity(name = "OASCondition")
 @Data

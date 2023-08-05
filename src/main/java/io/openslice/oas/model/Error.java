@@ -20,20 +20,20 @@
 package io.openslice.oas.model;
 
 import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+
 import org.springframework.validation.annotation.Validated;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Used when an API throws an Error, typically with a HTTP error response-code (3xx, 4xx, 5xx)
  */
-@ApiModel(description = "Used when an API throws an Error, typically with a HTTP error response-code (3xx, 4xx, 5xx)")
+@Schema(description = "Used when an API throws an Error, typically with a HTTP error response-code (3xx, 4xx, 5xx)")
 @Validated
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2021-02-08T11:50:07.226173200+02:00[Europe/Athens]")
+@jakarta.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2021-02-08T11:50:07.226173200+02:00[Europe/Athens]")
 public class Error   {
   @JsonProperty("code")
   private String code = null;
@@ -57,7 +57,7 @@ public class Error   {
    * Application relevant detail, defined in the API or a common list.
    * @return code
   **/
-  @ApiModelProperty(required = true, value = "Application relevant detail, defined in the API or a common list.")
+  @Schema(required = true, description = "Application relevant detail, defined in the API or a common list.")
       @NotNull
 
     public String getCode() {
@@ -77,7 +77,7 @@ public class Error   {
    * Explanation of the reason for the error which can be shown to a client user.
    * @return reason
   **/
-  @ApiModelProperty(required = true, value = "Explanation of the reason for the error which can be shown to a client user.")
+  @Schema(required = true, description = "Explanation of the reason for the error which can be shown to a client user.")
       @NotNull
 
     public String getReason() {
@@ -97,7 +97,7 @@ public class Error   {
    * More details and corrective actions related to the error which can be shown to a client user.
    * @return message
   **/
-  @ApiModelProperty(value = "More details and corrective actions related to the error which can be shown to a client user.")
+  @Schema(description = "More details and corrective actions related to the error which can be shown to a client user.")
   
     public String getMessage() {
     return message;
@@ -116,7 +116,7 @@ public class Error   {
    * HTTP Error code extension
    * @return status
   **/
-  @ApiModelProperty(value = "HTTP Error code extension")
+  @Schema(description = "HTTP Error code extension")
   
     public String getStatus() {
     return status;

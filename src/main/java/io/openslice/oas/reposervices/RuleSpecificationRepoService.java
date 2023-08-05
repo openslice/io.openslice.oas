@@ -6,23 +6,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.persistence.EntityManagerFactory;
-import javax.validation.Valid;
-
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.openslice.oas.model.Action;
-import io.openslice.oas.model.ActionSpecification;
-import io.openslice.oas.model.ActionSpecificationRef;
 import io.openslice.oas.model.Condition;
 import io.openslice.oas.model.RuleSpecification;
 import io.openslice.oas.model.RuleSpecificationCreate;
 import io.openslice.oas.model.RuleSpecificationUpdate;
 import io.openslice.oas.repo.RuleSpecificationRepository;
-import io.openslice.tmf.am642.model.AlarmRef;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.validation.Valid;
 
 
 @Service
