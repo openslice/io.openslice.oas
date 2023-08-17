@@ -55,13 +55,6 @@ flows = @OAuthFlows(authorizationCode = @OAuthFlow(
 public class SwaggerDocumentationConfig {
 
 
-	@Value("${swagger.authserver}")
-	private String AUTH_SERVER;
-	@Value("${swagger.clientid}")
-	private String CLIENT_ID;
-	@Value("${swagger.clientsecret}")
-	private String CLIENT_SECRET;
-
 	
 	OpenApiCustomizer apiInfoOasV1() {
 		

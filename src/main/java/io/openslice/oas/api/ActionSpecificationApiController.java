@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -60,7 +61,7 @@ public class ActionSpecificationApiController  implements ActionSpecificationApi
 	
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<ActionSpecification> createActionSpecification(@Valid ActionSpecificationCreate body) {
 		try {
 
@@ -74,7 +75,7 @@ public class ActionSpecificationApiController  implements ActionSpecificationApi
 	}
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<Void> deleteActionSpecification(String id) {
 		try {
 
@@ -86,7 +87,7 @@ public class ActionSpecificationApiController  implements ActionSpecificationApi
 	}
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<ActionSpecification> retrieveActionSpecification(String id, @Valid String fields,
 			Map<String, String> allParams) {
 
@@ -102,7 +103,7 @@ public class ActionSpecificationApiController  implements ActionSpecificationApi
 	
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<ActionSpecification> patchActionSpecification(@Valid ActionSpecificationUpdate body,
 			String id) {
 		ActionSpecification c = actionSpecificationRepoService.updateActionSpecification( id, body );
@@ -112,7 +113,7 @@ public class ActionSpecificationApiController  implements ActionSpecificationApi
 	
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<List<ActionSpecification>> listActionSpecification(@Valid String fields,
 			@Valid Integer offset, @Valid Integer limit, @Valid Map<String, String> allParams) {
 

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -59,7 +60,7 @@ public class RuleSpecificationApiController  implements RuleSpecificationApi {
 	
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<RuleSpecification> createRuleSpecification(@Valid RuleSpecificationCreate body) {
 		try {
 
@@ -74,7 +75,7 @@ public class RuleSpecificationApiController  implements RuleSpecificationApi {
 	
 
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<Void> deleteRuleSpecification(String id) {
 		try {
 
@@ -86,7 +87,7 @@ public class RuleSpecificationApiController  implements RuleSpecificationApi {
 	}
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<RuleSpecification> retrieveRuleSpecification(String id, @Valid String fields) {
 		try {
 
@@ -98,7 +99,7 @@ public class RuleSpecificationApiController  implements RuleSpecificationApi {
 	}
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<RuleSpecification> patchRuleSpecification(@Valid RuleSpecificationUpdate body, String id) {
 		RuleSpecification c = ruleSpecificationRepoService.updateRuleSpecification( id, body );
 
@@ -107,7 +108,7 @@ public class RuleSpecificationApiController  implements RuleSpecificationApi {
 	
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<List<RuleSpecification>> listRuleSpecification(@Valid String fields,
 			@Valid Integer offset, @Valid Integer limit, @Valid Map<String, String> allParams) {
 		try {
