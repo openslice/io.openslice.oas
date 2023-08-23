@@ -1,10 +1,5 @@
+origins: http://localhost,http://localhost:13082,http://127.0.0.1:13082,https://localhost, 
 
-# For Spring Actuator /info endpoint
-info:
-    artifact: oas-service
-    name: oas-service
-    description: Spring oas-service
-    version: 1.0.0
 
 server:
   port: 13101
@@ -45,6 +40,11 @@ spring:
       max-connections: 100
     packages:
       trust-all: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/auth/realms/openslice
       
       
 logging:
