@@ -61,6 +61,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import io.openslice.tmf.configuration.WebSecurityConfigKeycloak;
+import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.JwtGrantedAuthoritiesConverter;
+import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.SpringAddonsJwtAuthenticationConverter;
+import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.SpringAddonsProperties;
+import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.SpringAddonsProperties.IssuerProperties;
+import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.SpringAddonsProperties.MisconfigurationException;
+import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.SpringAddonsProperties.IssuerProperties.ClaimMappingProperties;
+import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.SpringAddonsProperties.IssuerProperties.ClaimMappingProperties.CaseProcessing;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +79,6 @@ import lombok.RequiredArgsConstructor;
 @Profile("!testing")
 public class WebSecurityConfigKeycloak  {
 	
-
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http, ServerProperties serverProperties,
 			@Value("${origins:[]}") String[] origins, @Value("${permit-all:[]}") String[] permitAll,
@@ -115,6 +122,7 @@ public class WebSecurityConfigKeycloak  {
 		configuration.setAllowedMethods(List.of("*"));
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setExposedHeaders(List.of("*"));
+		configuration.setAllowCredentials(true);
 
 		final var source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
@@ -177,6 +185,8 @@ public class WebSecurityConfigKeycloak  {
 		@Override
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public Collection<? extends GrantedAuthority> convert(Jwt jwt) {
+			
+			
 			return Stream.of(properties.claims).flatMap(claimProperties -> {
 				Object claim;
 				try {
@@ -208,7 +218,11 @@ public class WebSecurityConfigKeycloak  {
 					}
 				}
 				return Stream.empty();
-			}).map(SimpleGrantedAuthority::new).map(GrantedAuthority.class::cast).toList();
+			}) /* Insert some transformation here if you want to add a prefix like "ROLE_" or force upper-case authorities */
+
+					.map(s -> "ROLE_" + s)
+					.map(SimpleGrantedAuthority::new)
+					.map(GrantedAuthority.class::cast).toList();
 		}
 	}
 
