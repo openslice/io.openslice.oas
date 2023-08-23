@@ -60,15 +60,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import io.openslice.tmf.configuration.WebSecurityConfigKeycloak;
-import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.JwtGrantedAuthoritiesConverter;
-import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.SpringAddonsJwtAuthenticationConverter;
-import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.SpringAddonsProperties;
-import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.SpringAddonsProperties.IssuerProperties;
-import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.SpringAddonsProperties.MisconfigurationException;
-import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.SpringAddonsProperties.IssuerProperties.ClaimMappingProperties;
-import io.openslice.tmf.configuration.WebSecurityConfigKeycloak.SpringAddonsProperties.IssuerProperties.ClaimMappingProperties.CaseProcessing;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
