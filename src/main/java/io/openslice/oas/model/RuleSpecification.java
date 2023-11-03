@@ -1,28 +1,22 @@
 package io.openslice.oas.model;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.validation.Valid;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import io.openslice.tmf.common.model.OpensliceEvent;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.Valid;
 import lombok.Data;
 
 /**
@@ -31,7 +25,7 @@ import lombok.Data;
  * A RuleSpecification is an entity that describes a rule to apply an action on certain conditions in the context of a service
  *
  */
-@ApiModel(description = "A RuleSpecification is an entity that describes a rule to apply an action on certain conditions in the context of a service.")
+@Schema(description = "A RuleSpecification is an entity that describes a rule to apply an action on certain conditions in the context of a service.")
 @Validated
 @Entity(name = "OASRuleSpec")
 @Data
@@ -78,7 +72,7 @@ public class RuleSpecification {
 	 * 
 	 * @return name
 	 **/
-	@ApiModelProperty(value = "Name of the entity")
+	@Schema(description = "Name of the entity")
 
 	public String getName() {
 		return name;
@@ -108,7 +102,7 @@ public class RuleSpecification {
 	 * 
 	 * @return description
 	 **/
-	@ApiModelProperty(value = "Description of this entity")
+	@Schema(description = "Description of this entity")
 
 	public String getDescription() {
 		return description;

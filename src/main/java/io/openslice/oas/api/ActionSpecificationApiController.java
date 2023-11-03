@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +14,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.openslice.oas.model.ActionSpecification;
 import io.openslice.oas.model.ActionSpecificationCreate;
 import io.openslice.oas.model.ActionSpecificationUpdate;
 import io.openslice.oas.reposervices.ActionSpecificationRepoService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 
 @Controller
@@ -61,7 +61,7 @@ public class ActionSpecificationApiController  implements ActionSpecificationApi
 	
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<ActionSpecification> createActionSpecification(@Valid ActionSpecificationCreate body) {
 		try {
 
@@ -75,7 +75,7 @@ public class ActionSpecificationApiController  implements ActionSpecificationApi
 	}
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<Void> deleteActionSpecification(String id) {
 		try {
 
@@ -87,7 +87,7 @@ public class ActionSpecificationApiController  implements ActionSpecificationApi
 	}
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<ActionSpecification> retrieveActionSpecification(String id, @Valid String fields,
 			Map<String, String> allParams) {
 
@@ -103,7 +103,7 @@ public class ActionSpecificationApiController  implements ActionSpecificationApi
 	
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<ActionSpecification> patchActionSpecification(@Valid ActionSpecificationUpdate body,
 			String id) {
 		ActionSpecification c = actionSpecificationRepoService.updateActionSpecification( id, body );
@@ -113,7 +113,7 @@ public class ActionSpecificationApiController  implements ActionSpecificationApi
 	
 	
 	@Override
-	@Secured({ "ROLE_ADMIN" })
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')" )
 	public ResponseEntity<List<ActionSpecification>> listActionSpecification(@Valid String fields,
 			@Valid Integer offset, @Valid Integer limit, @Valid Map<String, String> allParams) {
 

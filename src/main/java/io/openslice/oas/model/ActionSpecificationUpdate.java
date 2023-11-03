@@ -3,14 +3,12 @@ package io.openslice.oas.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.Valid;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 
 /**
  * @author ctranoris
@@ -18,7 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
  * An ActionSpecification is an entity that describes an action to perform on certain entities
  *
  */
-@ApiModel(description = "An ActionSpecification is an entity that describes an action to perform on certain entities.")
+@Schema(description = "An ActionSpecification is an entity that describes an action to perform on certain entities.")
 @Validated
 public class ActionSpecificationUpdate {
 
@@ -56,7 +54,7 @@ public class ActionSpecificationUpdate {
 	 * 
 	 * @return name
 	 **/
-	@ApiModelProperty(value = "The name of the entity")
+	@Schema(description = "The name of the entity")
 
 	public String getName() {
 		return name;
@@ -72,7 +70,7 @@ public class ActionSpecificationUpdate {
 	 * 
 	 * @return description
 	 **/
-	@ApiModelProperty(value = "Description of the entity")
+	@Schema(description = "Description of the entity")
 
 	public String getDescription() {
 		return description;

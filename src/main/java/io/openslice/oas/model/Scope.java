@@ -1,16 +1,11 @@
 package io.openslice.oas.model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Embeddable;
 import lombok.Data;
 
 /**
@@ -19,7 +14,7 @@ import lombok.Data;
  * The scope that the Rule is related
  *
  */
-@ApiModel(description = "The scope that the Rule is related.")
+@Schema(description = "The scope that the Rule is related.")
 @Validated
 @Data
 @Embeddable
